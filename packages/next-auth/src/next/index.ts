@@ -5,13 +5,13 @@ import { setCookie } from "./utils"
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
-  NextApiResponse,
+  NextApiResponse
 } from "next"
 import type { NextAuthOptions, Session } from ".."
 import type {
   NextAuthAction,
   NextAuthRequest,
-  NextAuthResponse,
+  NextAuthResponse
 } from "../core/types"
 
 async function NextAuthNextHandler(
@@ -107,6 +107,8 @@ export async function unstable_getServerSession(
 
   options.secret = options.secret ?? process.env.NEXTAUTH_SECRET
 
+  console.log("[next-auth][debug]", "unstable_getServerSession starting up")
+
   const session = await NextAuthHandler<Session | {}>({
     options,
     req: {
@@ -118,9 +120,14 @@ export async function unstable_getServerSession(
     },
   })
 
+  console.log("[next-auth][debug]", "finished NextAuthHandler")
+
   const { body, cookies } = session
 
   cookies?.forEach((cookie) => setCookie(res, cookie))
+
+  console.log("[next-auth][debug]", "finished setting cookies")
+  console.log("[next-auth][debug]",  (body && Object.keys(body).length));
 
   if (body && Object.keys(body).length) return body as Session
   return null
